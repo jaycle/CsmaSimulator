@@ -7,6 +7,7 @@ public class Channel {
 
     private Queue<Integer> queue;
     private List<Node> nodeList;
+    private int timeCounter;
 
     public Channel(int numberOfNodes, int delay) {
         nodeList = new ArrayList<>();
@@ -19,6 +20,7 @@ public class Channel {
         for (int i = 0; i < delay; i++) {
             queue.add(CLEAR_CHANNEL);
         }
+        timeCounter = 0;
     }
 
     public boolean isClear() {
@@ -34,11 +36,13 @@ public class Channel {
         return queue.peek();
     }
 
-    public void advanceTime() {
+    public int[] advanceTime() {
         int queueCode = CLEAR_CHANNEL;
+        int[] transmissions = {0,0,0,0,0,-1};
         for (int nodeIndex = 0; nodeIndex < nodeList.size(); nodeIndex++) {
             if (nodeList.get(nodeIndex).postsFrameToChannel()) {
-                System.out.println("Node " + nodeIndex + " begins transmission.");
+                System.out.println("Node " + (nodeIndex + 1) + " begins transmission.");
+                transmissions[nodeIndex] = 1;
                 if (queueCode != CLEAR_CHANNEL) {
                     queueCode = COLLISION;
                     break;
@@ -49,6 +53,14 @@ public class Channel {
         }
         queue.add(queueCode);
         queue.poll(); // remove element to keep queue size the same
+        transmissions[5] = queueCode;
+        timeCounter++;
+        return transmissions;
+
+    }
+
+    public int getTime() {
+        return timeCounter;
     }
 
     public String printChannel() {
