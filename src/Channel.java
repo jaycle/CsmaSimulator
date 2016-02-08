@@ -12,7 +12,7 @@ public class Channel {
     public Channel(int numberOfNodes, int delay) {
         nodeList = new ArrayList<>();
         for (int i = 0; i < numberOfNodes; i++) {
-            nodeList.add(new Node(this, .1));
+            nodeList.add(new Node(this, .02));
         }
 
         // Create queue with clear channel size equal to delay
@@ -61,6 +61,10 @@ public class Channel {
 
     public int getTime() {
         return timeCounter;
+    }
+
+    public List<Node> getNodeList() {
+        return nodeList;
     }
 
     public String printChannel() {

@@ -1,10 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class Driver {
     public static void main(String[] s) {
 
         Channel channel = new Channel(5, 2);
+        List<Node> nodeList = channel.getNodeList();   // hold reference for printing state
+
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -27,20 +30,25 @@ public class Driver {
 
                 advanceButton.addActionListener(e -> {
                     int[] tm = channel.advanceTime();
+
+                    for (int i = 0; i < nodeList.size(); i++) {
+                        panel.setNodeState(i, nodeList.get(i).getState());
+                    }
+
                     System.out.println(channel.printChannel());
                     text.setText("Time: " + channel.getTime() + "\n");
-                    if (channel.getStatus() == Channel.COLLISION) {
+                    if (tm[5] == Channel.COLLISION) {
                         text.append("Nodes see: Collision!");
                         panel.setColor(Color.RED);
                         panel.resizeNodes(tm);
                         panel.repaint();
-                    } else if (channel.getStatus() == Channel.CLEAR_CHANNEL) {
+                    } else if (tm[5] == Channel.CLEAR_CHANNEL) {
                         text.append("Nodes see: Channel is clear");
                         panel.setColor(Color.blue);
                         panel.resizeNodes(tm);
                         panel.repaint();
                     } else {
-                        text.append("Nodes see: Channel seized by " + (channel.getStatus() + 1));
+                        text.append("Nodes see: Channel seized by " + (tm[5] + 1));
                         panel.setColor(Color.green);
                         panel.resizeNodes(tm);
                         panel.repaint();

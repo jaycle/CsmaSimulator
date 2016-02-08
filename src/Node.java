@@ -9,7 +9,7 @@ public class Node {
     private int transmitCounter;
     private State state;
 
-    private enum State {
+    public enum State {
         IDLE, WAITING, TRANSMITTING
     }
 
@@ -82,4 +82,7 @@ public class Node {
         }
     }
 
+    public State getState() {
+        return state;
+    }
 }

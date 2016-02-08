@@ -1,7 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 
 public class SimulationPanel extends JPanel{
 
@@ -16,6 +19,7 @@ public class SimulationPanel extends JPanel{
     private ArrayList<Rectangle> nodes;
     private ArrayList<Line2D> lines;
     private ArrayList<Line2D> linesToDraw;
+    private String[] nodeStates;
 
     Rectangle chan = new Rectangle(350, 190, 50, 50);
 
@@ -26,7 +30,9 @@ public class SimulationPanel extends JPanel{
         nodes = new ArrayList<>();
         lines = new ArrayList<>();
         linesToDraw = new ArrayList<>();
-        genearateGraphics();
+        nodeStates = new String[numberOfNodes];
+        Arrays.fill(nodeStates, "");
+        generateGraphics();
     }
 
     @Override
@@ -36,6 +42,34 @@ public class SimulationPanel extends JPanel{
 
     public void setColor(Color c) {
         mColor = c;
+    }
+
+    public void setNodeState(int node, Node.State nodeState) {
+        String text;
+        switch (nodeState) {
+            case IDLE:
+                text = "Idle";
+                break;
+            case WAITING:
+                text = "Waiting to send";
+                break;
+            case TRANSMITTING:
+                text = "Transmitting";
+                break;
+            default:
+                text = "";
+                break;
+        }
+
+        nodeStates[node] = text;
+    }
+
+    private void drawLabels(Graphics2D g2d) {
+        g2d.setColor(Color.BLACK);
+        for (int i = 0; i < mNumberOfNodes; i++) {
+            Rectangle node = nodes.get(i);
+            g2d.drawString(nodeStates[i], (int) node.x, (int) node.getMaxY()+15);
+        }
     }
 
     public void resizeNodes(int [] transmissionStates) {
@@ -51,7 +85,7 @@ public class SimulationPanel extends JPanel{
         }
     }
 
-    private void genearateGraphics() {
+    private void generateGraphics() {
         // Equally separate nodes vertically
         int separation = PANEL_HEIGHT / (mNumberOfNodes * 2 + 1);
 
@@ -79,13 +113,12 @@ public class SimulationPanel extends JPanel{
         for (int i = 0; i < mNumberOfNodes; i++) {
             g2d.fill(nodes.get(i));
         }
-
-
         for (Line2D line : linesToDraw) {
             g2d.draw(line);
         }
-
         g2d.fill(chan);
+
+        drawLabels(g2d);
     }
 }
 
