@@ -1,12 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class Driver {
     public static void main(String[] s) {
 
-        Channel channel = new Channel(5, 5);
+        Channel channel = new Channel(5, 2);
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -16,7 +14,6 @@ public class Driver {
 
                 JTextArea text = new JTextArea(5, 20);
                 JButton startButton = new JButton("Start");
-                JButton stopButton = new JButton("Stop");
                 JButton advanceButton = new JButton("Advance Time");
                 SimulationPanel panel = new SimulationPanel();
 
@@ -51,13 +48,6 @@ public class Driver {
                         panel.toDefault();
                         panel.repaint();
                     }
-                });
-
-                stopButton.addActionListener(e -> {
-                    text.setText("We've Stopped");
-                    panel.setColor(Color.blue);
-                    panel.repaint();
-
                 });
 
                 frame.add(startButton);
