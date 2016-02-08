@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Channel {
 
-    private static final int CLEAR_CHANNEL = -1;
-    private static final int COLLISION = -2;
+    public static final int CLEAR_CHANNEL = -1;
+    public static final int COLLISION = -2;
 
     private Queue<Integer> queue;
     private List<Node> nodeList;
@@ -38,7 +38,7 @@ public class Channel {
 
     public int[] advanceTime() {
         int queueCode = CLEAR_CHANNEL;
-        int[] transmissions = {0,0,0,0,0,-1};
+        int[] transmissions = {0,0,0,0,0,CLEAR_CHANNEL};
         for (int nodeIndex = 0; nodeIndex < nodeList.size(); nodeIndex++) {
             if (nodeList.get(nodeIndex).postsFrameToChannel()) {
                 System.out.println("Node " + (nodeIndex + 1) + " begins transmission.");

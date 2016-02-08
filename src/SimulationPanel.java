@@ -1,90 +1,72 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
-import java.awt.geom.Line2D.Double;
+import java.util.ArrayList;
 
 public class SimulationPanel extends JPanel{
 
     private static final int X_ORIG = 100;
-    private static final int X_ADVANCED = 125;
+    private static final int TRANSLATION_AMOUNT = 25;
+    private static final int X_ADVANCED = X_ORIG + TRANSLATION_AMOUNT;
+    private static final int PANEL_WIDTH = 500;
+    private static final int PANEL_HEIGHT = 450;
 
     private Color mColor;
-    Rectangle node1 = new Rectangle(X_ORIG, 50, 50, 50);
-    Rectangle node2 = new Rectangle(X_ORIG, 120, 50, 50);
-    Rectangle node3 = new Rectangle(X_ORIG, 190, 50, 50);
-    Rectangle node4 = new Rectangle(X_ORIG, 260, 50, 50);
-    Rectangle node5 = new Rectangle(X_ORIG, 340, 50, 50);
+    private int mNumberOfNodes;
+    private ArrayList<Rectangle> nodes;
+    private ArrayList<Line2D> lines;
+    private ArrayList<Line2D> linesToDraw;
+
     Rectangle chan = new Rectangle(350, 190, 50, 50);
-    Line2D.Double line1 = new Line2D.Double(0, 0, 0, 0);
-    Line2D.Double line2 = new Line2D.Double(0, 0, 0, 0);
-    Line2D.Double line3 = new Line2D.Double(0, 0, 0, 0);
-    Line2D.Double line4 = new Line2D.Double(0, 0, 0, 0);
-    Line2D.Double line5 = new Line2D.Double(0, 0, 0, 0);
 
-
-    public SimulationPanel() {
+    public SimulationPanel(int numberOfNodes) {
         setBorder(BorderFactory.createLineBorder(Color.blue));
         mColor = Color.blue;
+        mNumberOfNodes = numberOfNodes;
+        nodes = new ArrayList<>();
+        lines = new ArrayList<>();
+        linesToDraw = new ArrayList<>();
+        genearateGraphics();
     }
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(500, 450);
+        return new Dimension(PANEL_WIDTH, PANEL_HEIGHT);
     }
 
     public void setColor(Color c) {
         mColor = c;
     }
 
-    public void toDefault() {
-        node1 = new Rectangle(100, 50, 50, 50);
-        node2 = new Rectangle(100, 120, 50, 50);
-        node3 = new Rectangle(100, 190, 50, 50);
-        node4 = new Rectangle(100, 260, 50, 50);
-        node5 = new Rectangle(100, 340, 50, 50);
-
+    public void resizeNodes(int [] transmissionStates) {
+        linesToDraw.clear();
+        for (int i = 0; i < mNumberOfNodes; i++) {
+            Rectangle node = nodes.get(i);
+            if (transmissionStates[i] == 1) {
+                node.setLocation(X_ADVANCED, node.y);
+                linesToDraw.add(lines.get(i));
+            } else {
+                node.setLocation(X_ORIG, node.y);
+            }
+        }
     }
 
-    public void resizeNodes(int n1, int n2, int n3, int n4, int n5) {
-        if (n1 == 1) {
-            node1.setLocation(X_ADVANCED, node1.y);
-            line1 = new Line2D.Double(150, 75, 375, 215);
+    private void genearateGraphics() {
+        // Equally separate nodes vertically
+        int separation = PANEL_HEIGHT / (mNumberOfNodes * 2 + 1);
 
-        } else {
-            node1.setLocation(X_ORIG, node1.y);
-            line1 = new Double(0, 0, 0, 0);
-        }
+        // lines go from right edge of node to left edge of channel
 
-        if (n2 == 1) {
-            node2.setLocation(X_ADVANCED, node2.y);
-            line2 = new Line2D.Double(150, 145, 375, 215);
-        } else {
-            node2.setLocation(X_ORIG, node2.y);
-            line2 = new Double(0, 0, 0, 0);
-        }
+        for (int i = 0; i < mNumberOfNodes; i++) {
+            // create node rectangles equally spaced
+            int xPos = 100;
+            int yPos = 2 * i * separation + separation;
+            nodes.add(new Rectangle(xPos, yPos, separation, separation));
 
-        if (n3 == 1) {
-            node3.setLocation(X_ADVANCED, node3.y);
-            line3 = new Line2D.Double(150, 215, 375, 215);
-        } else {
-            node3.setLocation(X_ORIG, node3.y);
-            line3 = new Double(0, 0, 0, 0);
-        }
-
-        if (n4 == 1) {
-            node4.setLocation(X_ADVANCED, node4.y);
-            line4 = new Line2D.Double(150, 285, 375, 215);
-        } else{
-            node4.setLocation(X_ORIG, node4.y);
-            line4 = new Double(0, 0, 0, 0);
-        }
-
-        if (n5 == 1) {
-            node5.setLocation(X_ADVANCED, node5.y);
-            line5 = new Line2D.Double(150, 365, 375, 215);
-        } else {
-            node5.setLocation(X_ORIG, node5.y);
-            line5 = new Double(0, 0, 0, 0);
+            // create connection lines equally spaced
+            int rightEdge = xPos + separation + TRANSLATION_AMOUNT;
+            int nodeVerticalCenter = yPos + (separation / 2);
+            lines.add(new Line2D.Double(rightEdge, nodeVerticalCenter, chan.getCenterX(), chan.getCenterY()));
         }
     }
 
@@ -94,17 +76,16 @@ public class SimulationPanel extends JPanel{
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(mColor);
-        g2d.fill(node1);
-        g2d.fill(node2);
-        g2d.fill(node3);
-        g2d.fill(node4);
-        g2d.fill(node5);
+        for (int i = 0; i < mNumberOfNodes; i++) {
+            g2d.fill(nodes.get(i));
+        }
+
+
+        for (Line2D line : linesToDraw) {
+            g2d.draw(line);
+        }
+
         g2d.fill(chan);
-        g2d.draw(line1);
-        g2d.draw(line2);
-        g2d.draw(line3);
-        g2d.draw(line4);
-        g2d.draw(line5);
     }
 }
 

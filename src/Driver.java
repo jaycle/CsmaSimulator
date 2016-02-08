@@ -15,9 +15,9 @@ public class Driver {
                 JTextArea text = new JTextArea(5, 20);
                 JButton startButton = new JButton("Start");
                 JButton advanceButton = new JButton("Advance Time");
-                SimulationPanel panel = new SimulationPanel();
+                SimulationPanel panel = new SimulationPanel(5);
 
-                startButton.addActionListener(e ->  {
+                startButton.addActionListener(e -> {
                     frame.add(advanceButton);
                     frame.add(panel);
                     frame.add(text);
@@ -28,24 +28,21 @@ public class Driver {
                 advanceButton.addActionListener(e -> {
                     int[] tm = channel.advanceTime();
                     System.out.println(channel.printChannel());
-                    if (tm[5] == -2) {
-                        text.setText("Time: " + channel.getTime() + "\n" +
-                                "Collision!");
+                    text.setText("Time: " + channel.getTime() + "\n");
+                    if (channel.getStatus() == Channel.COLLISION) {
+                        text.append("Nodes see: Collision!");
                         panel.setColor(Color.RED);
-                        panel.resizeNodes(tm[0], tm[1], tm[2], tm[3], tm[4]);
+                        panel.resizeNodes(tm);
                         panel.repaint();
-                    } else if (tm[5] >= 0) {
-                        text.setText("Time: " + channel.getTime() + "\n" +
-                                "Node " + (tm[5] + 1) + " has the channel");
-                        panel.setColor(Color.green);
-                        panel.resizeNodes(tm[0], tm[1], tm[2], tm[3], tm[4]);
-                        panel.repaint();
-                    } else if (tm[5] == -1) {
-                        text.setText("Time: " + channel.getTime() + "\n" +
-                                "Channel is clear");
+                    } else if (channel.getStatus() == Channel.CLEAR_CHANNEL) {
+                        text.append("Nodes see: Channel is clear");
                         panel.setColor(Color.blue);
-                        panel.resizeNodes(tm[1], tm[2], tm[3], tm[4], tm[5]);
-                        panel.toDefault();
+                        panel.resizeNodes(tm);
+                        panel.repaint();
+                    } else {
+                        text.append("Nodes see: Channel seized by " + (channel.getStatus() + 1));
+                        panel.setColor(Color.green);
+                        panel.resizeNodes(tm);
                         panel.repaint();
                     }
                 });
